@@ -52,9 +52,20 @@ case_monolithic.ttl: \
   .venv.done.log
 	source venv/bin/activate \
 	  && rdfpipe \
+	    --output-format turtle \
 	    $(case_turtle_files) \
 	    $(uco_turtle_files) \
 	    > __$@
+	# Review UCO for OWL 2 DL conformance.
+	source venv/bin/activate \
+	  && pyshacl \
+	    --allow-warnings \
+	    --data-file-format turtle \
+	    --format turtle \
+	    --inference none \
+	    --shacl $(top_srcdir)/dependencies/UCO/ontology/owl/owl.ttl \
+	    --shacl-file-format turtle \
+	    __$@
 	java -jar $(top_srcdir)/dependencies/UCO/lib/rdf-toolkit.jar \
 	  --infer-base-iri \
 	  --inline-blank-nodes \
